@@ -3,6 +3,9 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const routes = require('./routes/index.js');
+const { conn } = require('./db.js');
+const PORT = 3001;
+const cors = require('cors');
 
 require('./db.js');
 
@@ -21,6 +24,25 @@ server.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
   next();
 });
+// Configura CORS
+server.use(cors({
+  origin: 'http://localhost:5173', 
+  credentials: true, // Permite credenciales (cookies, etc.)
+}));
+
+server.use('/', routes);
+
+// Realiza la sincronización de la base de datos antes de iniciar el servidor
+conn.sync({ force: true })
+  .then(() => {
+    server.listen(PORT, () => {
+      console.log('Server raised in port: ' + PORT);
+    });
+  })
+  .catch((error) => {
+    console.error('Error al sincronizar la base de datos:', error);
+  });
+
 
 server.use('/', routes);
 
