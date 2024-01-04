@@ -7,8 +7,6 @@ const { conn } = require('./db.js');
 const PORT = 3001;
 const cors = require('cors');
 
-require('./db.js');
-
 const server = express();
 
 server.name = 'API';
