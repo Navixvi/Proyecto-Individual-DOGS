@@ -3,7 +3,7 @@ const { Dog, Temperament } = require('../db');
 const { Op } = require('sequelize');
 
 const getDogsByName = async (req, res) => {
-  const { name } = req.query;
+  const { name } = req.params; // Cambiado de req.query a req.params
   const API_KEY = process.env.API_KEY;
 
   try {
@@ -11,29 +11,28 @@ const getDogsByName = async (req, res) => {
     const apiResponse = await axios.get(`https://api.thedogapi.com/v1/breeds/search?q=${name}&api_key=${API_KEY}`);
     const apiDogs = Array.isArray(apiResponse.data) ? apiResponse.data : [];
 
-    // Buscar razas en la base de datos
-    const dbDogs = await Dog.findAll({
+    // Si la base de datos no está vacía, buscar razas en la base de datos
+    const dbDogs = Dog.findAll({
       where: {
-        name: {
+        nombre: {
           [Op.iLike]: `%${name}%`,
         },
       },
-      include: {
-        model: Temperament,
-        attributes: ['name'],
-        through: { attributes: [] },
-      },
+      include: Temperament,
     });
 
+    // Esperar a que se resuelvan ambas consultas
+    const [dbResults, apiResults] = await Promise.all([dbDogs, apiDogs]);
+
     // Combinar resultados de la API y la base de datos
-    const mergedResults = [...apiDogs, ...dbDogs];
+    const mergedResults = [...apiResults, ...dbResults];
 
     if (mergedResults.length > 0) {
       // Procesar la información y devolverla en el formato deseado
       const resultDetails = mergedResults.map(result => {
         const details = {
           id: result.id || result._id, // Manejar la variación de nombres de propiedad en API y base de datos
-          name: result.name,
+          name: result.name || result.nombre,
         };
 
         if (result.weight) {
@@ -44,9 +43,11 @@ const getDogsByName = async (req, res) => {
           details.height = result.height;
         }
 
-        // Temperament es un array, debes manejarlo adecuadamente
-        if (result.temperament && result.temperament.length > 0) {
-          details.temperament = result.temperament.map(t => t.name);
+        // Temperament es un array o cadena, debes manejarlo adecuadamente
+        if (result.temperament) {
+          details.temperament = Array.isArray(result.temperament)
+            ? result.temperament.map(t => t.trim())
+            : result.temperament.split(',').map(t => t.trim());
         }
 
         return details;
