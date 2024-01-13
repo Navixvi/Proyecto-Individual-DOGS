@@ -1,17 +1,16 @@
 import React from 'react';
 
-const Card = ({ dog }) => {
+const Card = ({ dog, onClick }) => {
   if (!dog) {
     return null;
   }
 
   const { name, temperaments, weight, reference_image_id } = dog;
 
-  // Construir la URL de la imagen
   const imageUrl = `https://cdn2.thedogapi.com/images/${reference_image_id}.jpg`;
 
   return (
-    <div className="card">
+    <div className="card" onClick={onClick}>
       <img src={imageUrl} alt={name} />
       <h3>{name}</h3>
       <p>
@@ -23,3 +22,4 @@ const Card = ({ dog }) => {
 };
 
 export default Card;
+

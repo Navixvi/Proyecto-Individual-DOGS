@@ -1,9 +1,9 @@
+// Controlador para obtener detalles de una raza de perro por ID
 const axios = require('axios');
 const { Dog, Temperament } = require('../db');
 
 const getDogById = async (req, res) => {
   const { idRaza } = req.params;
-  
 
   try {
     // Verificar si la raza existe en la API
@@ -14,13 +14,16 @@ const getDogById = async (req, res) => {
     if (apiDog) {
       const { weight, height, life_span, temperament, origin, bred_for, breed_group } = apiDog;
 
+      // Convierte la cadena de temperamentos en un array
+      const temperamentsArray = temperament.split(',').map((temp) => temp.trim());
+
       const dogDetails = {
         id: apiDog.id,
         name: apiDog.name,
         weight,
         height,
         life_span,
-        temperament,
+        temperaments: temperamentsArray,
         origin,
         bred_for,
         breed_group,
