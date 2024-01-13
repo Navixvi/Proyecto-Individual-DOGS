@@ -14,10 +14,11 @@ const getDogBreeds = async (req, res) => {
         weight: breed.weight,
         height: breed.height,
         life_span: breed.life_span,
-        temperament: breed.temperament,
+        temperaments: breed.temperament ? breed.temperament.split(',').map((t) => t.trim()) : [],
         origin: breed.origin,
         bred_for: breed.bred_for,
         breed_group: breed.breed_group,
+        reference_image_id: breed.reference_image_id, 
       };
     });
 
