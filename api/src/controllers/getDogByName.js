@@ -3,7 +3,7 @@ const { Dog, Temperament } = require('../db');
 const { Op } = require('sequelize');
 
 const getDogsByName = async (req, res) => {
-  const { name } = req.params; // Cambiado de req.query a req.params
+  const { name } = req.params; 
   const API_KEY = process.env.API_KEY;
 
   try {
@@ -29,7 +29,7 @@ const getDogsByName = async (req, res) => {
 
     if (mergedResults.length > 0) {
       // Procesar la información y devolverla en el formato deseado
-      const resultDetails = mergedResults.map(result => {
+      const resultDetails = mergedResults.map(async (result) => {
         const details = {
           id: result.id || result._id, // Manejar la variación de nombres de propiedad en API y base de datos
           name: result.name || result.nombre,
@@ -43,17 +43,25 @@ const getDogsByName = async (req, res) => {
           details.height = result.height;
         }
 
-        // Temperament es un array o cadena, debes manejarlo adecuadamente
+
         if (result.temperament) {
           details.temperament = Array.isArray(result.temperament)
-            ? result.temperament.map(t => t.trim())
-            : result.temperament.split(',').map(t => t.trim());
+            ? result.temperament.map((t) => t.trim())
+            : result.temperament.split(',').map((t) => t.trim());
+        }
+
+        // Obtener la imagen de la raza desde la API
+        const imageResponse = await axios.get(`https://api.thedogapi.com/v1/images/search?breed_id=${result.id || result._id}`);
+        if (imageResponse.data && imageResponse.data[0] && imageResponse.data[0].url) {
+          details.image = imageResponse.data[0].url;
         }
 
         return details;
       });
 
-      res.json(resultDetails);
+      const resolvedDetails = await Promise.all(resultDetails);
+
+      res.json(resolvedDetails);
     } else {
       res.status(404).json({ error: 'No se encontraron razas de perros con ese nombre' });
     }

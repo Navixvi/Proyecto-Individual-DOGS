@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Card from '../components/Card';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import SearchBar from '../components/SearchBar';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [dogBreeds, setDogBreeds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const dogsPerPage = 8;
-  const navigate = useNavigate();  // Use useNavigate instead of useHistory
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDogBreeds = async () => {
@@ -23,7 +24,18 @@ const Home = () => {
   }, []);
 
   const handleCardClick = (id) => {
-    navigate(`/detail/${id}`);  // Use navigate instead of history.push
+    navigate(`/detail/${id}`);
+  };
+
+  const handleSearch = async (searchTerm) => {
+    try {
+      const response = await axios.get(`http://localhost:3001/dogs/name/${searchTerm}`);
+      console.log(response.data);
+      setDogBreeds(response.data);
+      setCurrentPage(1);
+    } catch (error) {
+      console.error('Error al buscar razas de perros:', error);
+    }
   };
 
   const indexOfLastDog = currentPage * dogsPerPage;
@@ -35,6 +47,7 @@ const Home = () => {
   return (
     <div>
       <h2>Listado de Razas de Perros</h2>
+      <SearchBar onSearch={handleSearch} />
       <ul className="dog-list">
         {currentDogs.map((dogBreed) => (
           <Card
