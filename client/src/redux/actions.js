@@ -1,5 +1,12 @@
 import axios from 'axios';
-import { FETCH_DOGS_SUCCESS, SEARCH_DOGS_SUCCESS } from './action-type';
+import {
+  FETCH_DOGS_SUCCESS,
+  SEARCH_DOGS_SUCCESS,
+  FILTER_BY_TEMPERAMENT,
+  FILTER_BY_ORIGIN,
+  SORT_BY_ALPHABETICAL,
+  SORT_BY_WEIGHT,
+} from './action-types';
 
 export const fetchDogsSuccess = (dogs) => ({
   type: FETCH_DOGS_SUCCESS,
@@ -32,3 +39,22 @@ export const searchDogsByName = (name) => {
     }
   };
 };
+export const filterByTemperament = (temperament) => ({
+  type: FILTER_BY_TEMPERAMENT,
+  payload: temperament,
+});
+
+export const filterByOrigin = (origin) => ({
+  type: FILTER_BY_ORIGIN,
+  payload: origin,
+});
+
+export const sortByAlphabetical = (order) => ({
+  type: SORT_BY_ALPHABETICAL,
+  payload: order,
+});
+
+export const sortByWeight = (order) => ({
+  type: SORT_BY_WEIGHT,
+  payload: order,
+});

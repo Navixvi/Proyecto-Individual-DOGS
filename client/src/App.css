@@ -128,3 +128,78 @@ button {
 button:hover {
   background-color: #45a049;
 }
+
+.createFormContainer {
+  width: 400px;
+  margin: auto;
+}
+
+.createForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.errorText {
+  color: red;
+}
+
+.submitButton {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.submitButton:hover {
+  background-color: #45a049;
+}
+.searchBarContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.searchButton,
+.createButton {
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.searchButton {
+  background-color: #4caf50;
+  color: white;
+}
+
+.searchButton:hover {
+  background-color: #45a049;
+}
+
+.createButton {
+  background-color: #2196f3;
+  color: white;
+}
+
+.createButton:hover {
+  background-color: #0b7dda;
+}
+

@@ -6,7 +6,7 @@ const Card = ({ dog, onClick }) => {
   }
 
   const { name, temperaments, weight, reference_image_id, image } = dog;
-  console.log('Temperaments:', temperaments);
+  //console.log('Temperaments:', temperaments);
 
   // Asegúrate de que temperaments sea un array o inicialízalo como un array vacío
   const dogTemperaments = Array.isArray(temperaments) ? temperaments : [];
