@@ -1,46 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
+import { fetchAllDogs, searchDogsByName } from '../redux/actions';
 import Card from '../components/Card';
 import SearchBar from '../components/SearchBar';
 import { useNavigate } from 'react-router-dom';
 
-const Home = () => {
-  const [dogBreeds, setDogBreeds] = useState([]);
+const Home = ({ dogBreeds, fetchAllDogs, searchDogsByName }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const dogsPerPage = 8;
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchDogBreeds = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/dogs`);
-        setDogBreeds(response.data);
-      } catch (error) {
-        console.error('Error al obtener razas de perros:', error);
-      }
-    };
-
-    fetchDogBreeds();
-  }, []);
+    fetchAllDogs();
+  }, [fetchAllDogs]);
 
   const handleCardClick = (id) => {
     navigate(`/detail/${id}`);
   };
 
   const handleSearch = async (searchTerm) => {
-    try {
-      const response = await axios.get(`http://localhost:3001/dogs/name/${searchTerm}`);
-      console.log(response.data);
-      setDogBreeds(response.data);
-      setCurrentPage(1);
-    } catch (error) {
-      console.error('Error al buscar razas de perros:', error);
-    }
+    searchDogsByName(searchTerm);
+    setCurrentPage(1);
   };
+
+  // Verifica si dogBreeds está definido y tiene una propiedad length
+  const totalDogs = dogBreeds ? dogBreeds.length : 0;
 
   const indexOfLastDog = currentPage * dogsPerPage;
   const indexOfFirstDog = indexOfLastDog - dogsPerPage;
-  const currentDogs = dogBreeds.slice(indexOfFirstDog, indexOfLastDog);
+  const currentDogs = dogBreeds ? dogBreeds.slice(indexOfFirstDog, indexOfLastDog) : [];
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -59,7 +47,7 @@ const Home = () => {
       </ul>
 
       <ul className="pagination">
-        {Array.from({ length: Math.ceil(dogBreeds.length / dogsPerPage) }).map((_, index) => (
+        {Array.from({ length: Math.ceil(totalDogs / dogsPerPage) }).map((_, index) => (
           <li key={index} onClick={() => paginate(index + 1)} className={currentPage === index + 1 ? 'active' : ''}>
             {index + 1}
           </li>
@@ -69,4 +57,13 @@ const Home = () => {
   );
 };
 
-export default Home;
+const mapStateToProps = (state) => ({
+  dogBreeds: state.dogBreeds,
+});
+
+const mapDispatchToProps = {
+  fetchAllDogs,
+  searchDogsByName,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
